@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Julian",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  },
+  {
+    "name": "Julian",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  },
+  {
+    "name": "Juli",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  },
+  {
+    "name": "Juli",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  },
+  {
+    "name": "Juli",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  },
+  {
+    "name": "Juli",
+    "machine_id": "99",
+    "date": "2022-02-14",
+    "granulate_color": "green",
+    "amount_in_g": "11"
+  }
+]
