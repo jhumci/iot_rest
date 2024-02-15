@@ -1,10 +1,22 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import datetime
 
 app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/about/")
+def about():
+    return render_template("about.html")
+
+@app.route("/contact/")
+def contact():
+    return render_template("contact.html")
 
 @app.route('/lager', methods=['GET'])
 def query_records():
