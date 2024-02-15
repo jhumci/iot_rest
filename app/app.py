@@ -92,4 +92,5 @@ def delete_record():
         f.write(json.dumps(new_records, indent=2))
     return jsonify(record)
 """
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=False, host='0.0.0.0', port=5000)
