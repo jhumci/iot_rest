@@ -20,22 +20,24 @@ def contact():
 
 @app.route('/lager', methods=['GET'])
 def query_records():
-    name = request.args.get('name')
-    print(name)
-    if name == "all":
+    try:
+        name = request.args.get('name')
+        print(name)
+        if name == "all":
+            with open('bestellungen.txt', 'r') as f:
+                data = f.read()
+                records = json.loads(data)
+                return jsonify(records)
+            
         with open('bestellungen.txt', 'r') as f:
             data = f.read()
             records = json.loads(data)
-            return jsonify(records)
-        
-    with open('bestellungen.txt', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for record in records:
-            if record['name'] == name:
-                return jsonify(record)
-        return jsonify({'error': 'data not found'})
-
+            for record in records:
+                if record['name'] == name:
+                    return jsonify(record)
+            return jsonify({'error': 'data not found'})
+    except:
+        return jsonify({'error': 'Bitte name : all oder eigenen Namen eingeben'})
     
 @app.route('/lager', methods=['PUT'])
 def create_record():
@@ -44,23 +46,27 @@ def create_record():
         record = json.loads(request.data)
         name, machine_id, date, granulate_color, amount_in_g = record["name"], record["machine_id"], record["date"], record["granulate_color"], record["amount_in_g"]
     except ValueError:
-        return jsonify({'error': 'Invalid input'})
+        return jsonify({'error': 'Bitte geben Sie die Daten für name, machine_id, date, granulate_color und amount_in_g ein'})
     
-    record = json.loads(request.data)
-    with open('bestellungen.txt', 'r') as f:
-        data = f.read()
-    if not data:
-        records = [record]
-    else:
-        records = json.loads(data)
-        records.append(record)
-    with open('bestellungen.txt', 'w') as f:
-        f.write(json.dumps(records, indent=2))
-    record["bestell_status"] = "ok"
-    # Make the Datum in the format of YYYY-MM-DD HH:MM and add one day and 3 hours
-    geplantes_lieferdatum = datetime.datetime.now() + datetime.timedelta(days=1, hours=3)
-    record["geplantes_lieferdatum"] = geplantes_lieferdatum.strftime("%Y-%m-%d %H:%M")
-    return jsonify(record)
+    try:
+        record = json.loads(request.data)
+        with open('bestellungen.txt', 'r') as f:
+            data = f.read()
+        if not data:
+            records = [record]
+        else:
+            records = json.loads(data)
+            records.append(record)
+        with open('bestellungen.txt', 'w') as f:
+            f.write(json.dumps(records, indent=2))
+        record["bestell_status"] = "ok"
+        # Make the Datum in the format of YYYY-MM-DD HH:MM and add one day and 3 hours
+        geplantes_lieferdatum = datetime.datetime.now() + datetime.timedelta(days=1, hours=3)
+        record["geplantes_lieferdatum"] = geplantes_lieferdatum.strftime("%Y-%m-%d %H:%M")
+        return jsonify(record)
+    except:
+        record["bestell_status"] = "error"
+        return jsonify(record)
 """
 @app.route('/lager', methods=['POST'])
 def update_record():

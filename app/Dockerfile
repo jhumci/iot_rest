@@ -25,3 +25,8 @@ adduser -S --shell /bin/bash --ingroup docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
+
+# expose the port
+#EXPOSE 5000
+#ENV SERVER_PORT 5000
+#ENV SERVER_HOST 0.0.0.0
