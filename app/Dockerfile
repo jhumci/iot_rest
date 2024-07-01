@@ -1,31 +1,21 @@
-# syntax=docker/dockerfile:1.4
-FROM python:3 AS builder
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-COPY requirements.txt /app
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
-
+# Copy the current directory contents into the container at /app
 COPY . /app
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-FROM builder as dev-envs
-
-RUN <<EOF
-apk update
-apk add git
-EOF
-
-RUN <<EOF
-addgroup -S docker
-adduser -S --shell /bin/bash --ingroup docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-
-# expose the port
+# Make port 5000 available to the world outside this container
 EXPOSE 5000
-ENV SERVER_PORT 5000
-ENV SERVER_HOST 0.0.0.0
+
+# Define environment variable
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Run flask application
+CMD [ "flask", "run"]
