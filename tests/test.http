@@ -1,0 +1,40 @@
+### html
+GET http://127.0.0.1:5000
+
+
+### all data
+GET http://127.0.0.1:5000/lager
+content-type: application/json
+
+{"name" : "all"}
+
+### all data
+GET http://127.0.0.1:5000/lager
+content-type: application/json
+
+{"name" : "Max Mustermann2"}
+
+### echo server
+POST  http://127.0.0.1:5000/test
+
+bullshit
+
+###
+PUT http://127.0.0.1:5000/lager
+
+bullshit
+
+
+### send json
+PUT http://127.0.0.1:5000/lager
+content-type: application/json
+
+{"some": "json"}
+
+
+
+###
+PUT http://127.0.0.1:5000/lager
+content-type: application/json
+
+{"name": "Max Mustermann2", "machine_id": "1", "date": "2021-01-01 12:00", "granulate_color": "rot", "amount_in_g": "1000"}

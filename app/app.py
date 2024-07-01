@@ -3,100 +3,86 @@
 import json
 from flask import Flask, request, jsonify, render_template
 import datetime
+from tinydb import TinyDB, Query
+from functools import wraps
 
 app = Flask(__name__)
 
+REQUIRED_FIELDS = ["name", "machine_id", "date", "granulate_color", "amount_in_g"]
+REQUIRED_FIELDS_GET = ["name"]
+
+def validate_json(required_fields):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if not request.is_json:
+                return jsonify({"error": "Invalid input, JSON required"}), 400
+            
+            data = request.get_json()
+            
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return jsonify({"error": "Missing fields", "missing_fields": missing_fields}), 400
+            
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
 @app.route("/")
 def home():
+    print("Home")
     return render_template("home.html")
 
-@app.route("/about/")
+@app.route('/about')
 def about():
     return render_template("about.html")
 
-@app.route("/contact/")
+@app.route('/contact')
 def contact():
     return render_template("contact.html")
 
 @app.route('/lager', methods=['GET'])
+@validate_json(REQUIRED_FIELDS_GET)
 def query_records():
-    try:
-        name = request.args.get('name')
-        print(name)
-        if name == "all":
-            with open('bestellungen.txt', 'r') as f:
-                data = f.read()
-                records = json.loads(data)
-                return jsonify(records)
-            
-        with open('bestellungen.txt', 'r') as f:
-            data = f.read()
-            records = json.loads(data)
-            for record in records:
-                if record['name'] == name:
-                    return jsonify(record)
-            return jsonify({'error': 'data not found'})
-    except:
-        return jsonify({'error': 'Bitte name : all oder eigenen Namen eingeben'})
-    
+    record = request.get_json()
+    name = record['name']
+    db = TinyDB('db.json')
+    Record = Query()
+    if name == "all":
+        records = db.all()
+        return jsonify(records)
+    else:
+        records = db.search(Record.name == name)
+        return jsonify(records)
+
+@app.route('/test', methods=['POST'])
+def test():
+    return request.data
+
+
+
 @app.route('/lager', methods=['PUT'])
+@validate_json(REQUIRED_FIELDS)
 def create_record():
-    # Check if the request JSON is valid
-    try:
-        record = json.loads(request.data)
-        name, machine_id, date, granulate_color, amount_in_g = record["name"], record["machine_id"], record["date"], record["granulate_color"], record["amount_in_g"]
-    except ValueError:
-        return jsonify({'error': 'Bitte geben Sie die Daten für name, machine_id, date, granulate_color und amount_in_g ein'})
-    
-    try:
-        record = json.loads(request.data)
-        with open('bestellungen.txt', 'r') as f:
-            data = f.read()
-        if not data:
-            records = [record]
-        else:
-            records = json.loads(data)
-            records.append(record)
-        with open('bestellungen.txt', 'w') as f:
-            f.write(json.dumps(records, indent=2))
-        record["bestell_status"] = "ok"
-        # Make the Datum in the format of YYYY-MM-DD HH:MM and add one day and 3 hours
-        geplantes_lieferdatum = datetime.datetime.now() + datetime.timedelta(days=1, hours=3)
-        record["geplantes_lieferdatum"] = geplantes_lieferdatum.strftime("%Y-%m-%d %H:%M")
-        return jsonify(record)
-    except:
-        record["bestell_status"] = "error"
-        return jsonify(record)
-"""
-@app.route('/lager', methods=['POST'])
-def update_record():
-    record = json.loads(request.data)
-    new_records = []
-    with open('data.txt', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-    for r in records:
-        if r['name'] == record['name']:
-            r['email'] = record['email']
-        new_records.append(r)
-    with open('data.txt', 'w') as f:
-        f.write(json.dumps(new_records, indent=2))
+
+    # check if the data is a valid json
+    record = request.get_json()
+
+    # Initialize the database, assuming the file is named 'db.json'
+    db = TinyDB('db.json')
+
+    record["bestell_status"] = "ok"
+
+
+
+    # Make the Datum in the format of YYYY-MM-DD HH:MM and add one day and 3 hours
+    geplantes_lieferdatum = datetime.datetime.now() + datetime.timedelta(days=1, hours=3)
+    record["geplantes_lieferdatum"] = geplantes_lieferdatum.strftime("%Y-%m-%d %H:%M")
+
+    # Insert the record into the database
+    db.insert(record)
     return jsonify(record)
-    
-@app.route('/', methods=['DELETE'])
-def delete_record():
-    record = json.loads(request.data)
-    new_records = []
-    with open('data.txt', 'r') as f:
-        data = f.read()
-        records = json.loads(data)
-        for r in records:
-            if r['name'] == record['name']:
-                continue
-            new_records.append(r)
-    with open('data.txt', 'w') as f:
-        f.write(json.dumps(new_records, indent=2))
-    return jsonify(record)
-"""
+
+
 if __name__ == "__main__":
     app.run(debug=False, host='0.0.0.0', port=5000)

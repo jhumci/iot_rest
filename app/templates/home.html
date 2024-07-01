@@ -4,4 +4,23 @@ Home
 {% endblock %}
 {% block content %}
 <p>This is an API for MCI - IoT1.</p>
+<p>It is a RESTful API that allows you to manage devices and their data.</p>
+<p>The API provides the following endpoints:</p>
+<li>GET /lager 
+    <li> json {"name" : "all"} gets all entries </li>
+    <li> json {"name" : "name"} gets all entries with name </li> 
+ </li>
+<li>PUT /lager
+    <li> json {
+        "amount_in_g": "1000"
+        "date": "2021-01-01 12:00",
+        "granulate_color": "rot",
+        "machine_id": "1",
+        "name": "Max Mustermann2"
+      } 
+      adds a new entry and returns "geplantes_lieferdatum" </li>
+ </li>
+</li>
+
+
 {% endblock %}

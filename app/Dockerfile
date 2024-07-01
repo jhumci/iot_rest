@@ -9,8 +9,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY . /app
 
-ENTRYPOINT ["python3"]
-CMD ["app.py"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 
 FROM builder as dev-envs
 
@@ -27,6 +26,6 @@ EOF
 COPY --from=gloursdocker/docker / /
 
 # expose the port
-#EXPOSE 5000
-#ENV SERVER_PORT 5000
-#ENV SERVER_HOST 0.0.0.0
+EXPOSE 5000
+ENV SERVER_PORT 5000
+ENV SERVER_HOST 0.0.0.0
