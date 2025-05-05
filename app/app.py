@@ -64,10 +64,10 @@ def test():
 @app.route('/lager', methods=['PUT'])
 @validate_json(REQUIRED_FIELDS)
 def create_record():
-
+    
     # check if the data is a valid json
     record = request.get_json()
-
+    print(record)
     # Initialize the database, assuming the file is named 'db.json'
     db = TinyDB('db.json')
 
