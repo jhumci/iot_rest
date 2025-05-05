@@ -67,7 +67,7 @@ def create_record():
     
     # check if the data is a valid json
     record = request.get_json()
-    print(record)
+    print(f"[{datetime.datetime.now()}] New record received at /lager (PUT): {json.dumps(record, indent=2)}")
     # Initialize the database, assuming the file is named 'db.json'
     db = TinyDB('db.json')
 
